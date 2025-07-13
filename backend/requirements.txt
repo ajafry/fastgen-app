@@ -1,0 +1,5 @@
+uvicorn
+fastapi
+fastapi-azure-auth
+dotenv
+aiofiles
