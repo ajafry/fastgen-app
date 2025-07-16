@@ -1,7 +1,7 @@
 $FrontEndDockerfile = 'Dockerfile.frontend'
 $BackEndDockerfile = 'Dockerfile.backend'
-$FrontEndImageName = 'fastgen-frontend'
-$BackEndImageName = 'fastgen-backend'
+$FrontEndImageName = 'app-frontend'
+$BackEndImageName = 'app-backend'
 
 # Build both images
 Write-Host "Building frontend image..."
