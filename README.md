@@ -1,4 +1,4 @@
-# Fastgen App
+# React-Python-FE-BE App
 
 This repository contains two main projects:
 
