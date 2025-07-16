@@ -15,11 +15,17 @@ if (!process.env.REACT_APP_TENANT_ID) {
     throw new Error('REACT_APP_TENANT_ID environment variable is required');
 }
 
+const getRedirectUri = () => {
+    // Use the current origin, which will be your Azure URL in production
+    // Not using the enviornment variable here to ensure it works in both development and production
+    return window.location.origin;
+};
+
  export const msalConfig = {
      auth: {
          clientId: process.env.REACT_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
          authority: `https://login.microsoftonline.com/${process.env.REACT_APP_TENANT_ID}/oauth2/v2.0/token`,
-         redirectUri: process.env.REACT_APP_REDIRECT_URI, // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
+         redirectUri: getRedirectUri(), // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
          postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
          navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
      },
