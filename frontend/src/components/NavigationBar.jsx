@@ -37,8 +37,8 @@ export const NavigationBar = ({ onLoadPeople, isLoadingPeople, onDisplayClaims }
                 ...apiRequest,
                 account: account,
             });
-
-            const response = await fetch('http://localhost:8000/api/people/', {
+            const api_base_url = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000'; // Ensure the base URL is set
+            const response = await fetch(`${api_base_url}/api/people/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${tokenResponse.accessToken}`,
