@@ -15,7 +15,7 @@ if (!process.env.REACT_APP_TENANT_ID) {
     throw new Error('REACT_APP_TENANT_ID environment variable is required');
 }
 
-const getRedirectUri = () => {
+export const getRedirectUri = () => {
     // Use the current origin, which will be your Azure URL in production
     // Not using the enviornment variable here to ensure it works in both development and production
     return window.location.origin;
@@ -67,7 +67,11 @@ const getRedirectUri = () => {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
  export const loginRequest = {
-     scopes: [],
+     scopes: ["api://fastapi-backend/User.CallApi"],
+ };
+
+ export const apiRequest = {
+     scopes: ["api://fastapi-backend/User.CallApi"],
  };
 
  /**

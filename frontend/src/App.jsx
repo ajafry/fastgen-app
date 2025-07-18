@@ -2,7 +2,9 @@ import { MsalProvider, AuthenticatedTemplate, useMsal, UnauthenticatedTemplate }
 import { Container, Button } from 'react-bootstrap';
 import { PageLayout } from './components/PageLayout';
 import { IdTokenData } from './components/DataDisplay';
+import { PeopleDisplay } from './components/PeopleDisplay';
 import { loginRequest } from './authConfig';
+import { useState } from 'react';
 
 import './styles/App.css';
 
@@ -12,12 +14,7 @@ import './styles/App.css';
 * only render their children if a user is authenticated or unauthenticated, respectively. For more, visit:
 * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
 */
-const MainContent = () => {
-    /**
-    * useMsal is hook that returns the PublicClientApplication instance,
-    * that tells you what msal is currently doing. For more, visit:
-    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/hooks.md
-    */
+const MainContent = ({ peopleState }) => {  // FIXED: Added peopleState prop
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
 
@@ -39,7 +36,16 @@ const MainContent = () => {
             <AuthenticatedTemplate>
                 {activeAccount ? (
                     <Container>
-                        <IdTokenData idTokenClaims={activeAccount.idTokenClaims} />
+                        {/* MODIFIED: Conditionally render claims or people data */}
+                        {peopleState?.data || peopleState?.loading || peopleState?.error ? (
+                            <PeopleDisplay 
+                                people={peopleState?.data} 
+                                loading={peopleState?.loading} 
+                                error={peopleState?.error} 
+                            />
+                        ) : (
+                            <IdTokenData idTokenClaims={activeAccount.idTokenClaims} />
+                        )}
                     </Container>
                 ) : null}
             </AuthenticatedTemplate>
@@ -52,7 +58,6 @@ const MainContent = () => {
     );
 };
 
-
 /**
 * msal-react is built on the React context API and all parts of your app that require authentication must be 
 * wrapped in the MsalProvider component. You will first need to initialize an instance of PublicClientApplication 
@@ -61,17 +66,51 @@ const MainContent = () => {
 * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
 */
 const App = ({ instance }) => {
+    // FIXED: Moved useState to the top of the component, before any conditional logic
+    const [peopleState, setPeopleState] = useState({
+        data: null,
+        loading: false,
+        error: null
+    });
+
     console.log('App component rendering with instance:', instance);
     
     if (!instance) {
         console.error('MSAL instance is null or undefined');
         return <div>Error: MSAL instance not provided</div>;
     }
+
+    // Handler for loading people - updated to set loading state before API call
+    const handleLoadPeopleWithLoading = (data, error = null) => {
+        if (data === undefined && error === undefined) {
+            // This is the start of loading
+            setPeopleState(prev => ({ ...prev, loading: true, error: null }));
+        } else {
+            // This is the completion of loading
+            setPeopleState({
+                data: error ? null : data,
+                loading: false,
+                error: error
+            });
+        }
+    };
+
+    const handleDisplayClaims = () => {
+        setPeopleState({
+            data: null,
+            loading: false,
+            error: null
+        });
+    };
     
     return (
         <MsalProvider instance={instance}>
-            <PageLayout>
-                <MainContent />
+            <PageLayout 
+                onLoadPeople={handleLoadPeopleWithLoading} 
+                isLoadingPeople={peopleState.loading}
+                onDisplayClaims={handleDisplayClaims}
+            >
+                <MainContent peopleState={peopleState} />
             </PageLayout>
         </MsalProvider>
     );

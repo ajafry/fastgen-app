@@ -2,7 +2,7 @@ import { AuthenticatedTemplate } from '@azure/msal-react';
 
 import { NavigationBar } from './NavigationBar.jsx';
 
-export const PageLayout = (props) => {
+export const PageLayout = ({ onLoadPeople, isLoadingPeople, onDisplayClaims, ...props }) => { // MODIFIED: Added props
     /**
      * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
      * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will
@@ -10,7 +10,11 @@ export const PageLayout = (props) => {
      */
     return (
         <>
-            <NavigationBar />
+            <NavigationBar 
+                onLoadPeople={onLoadPeople} 
+                isLoadingPeople={isLoadingPeople}
+                onDisplayClaims={onDisplayClaims}
+            />
             <br />
             <h5>
                 <center>Welcome to the Microsoft Authentication Library For React Tutorial</center>
