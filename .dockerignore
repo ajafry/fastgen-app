@@ -4,6 +4,10 @@ npm-debug.log
 .git
 .gitignore
 README.md
+backend/.env
+frontend/.env
+backend/.env.example
+frontend/.env.example
 .env
 .nyc_output
 coverage

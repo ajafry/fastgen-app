@@ -3,6 +3,22 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
+# Declare build arguments - this is what was missing!
+ARG REACT_APP_CLIENT_ID
+ARG REACT_APP_TENANT_ID
+ARG REACT_APP_API_BASE_URL
+
+# Set them as environment variables for the build process
+ENV REACT_APP_CLIENT_ID=$REACT_APP_CLIENT_ID
+ENV REACT_APP_TENANT_ID=$REACT_APP_TENANT_ID
+ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+
+# Debug: Print the environment variables during build
+RUN echo "Build-time environment variables:"
+RUN echo "REACT_APP_CLIENT_ID=$REACT_APP_CLIENT_ID"
+RUN echo "REACT_APP_TENANT_ID=$REACT_APP_TENANT_ID"
+RUN echo "REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL"
+
 # Copy package files and install dependencies
 COPY frontend/package*.json ./
 RUN npm install

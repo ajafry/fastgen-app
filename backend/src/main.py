@@ -7,7 +7,7 @@ from people.people import peopleRouter
 from os import environ
 from auth import azure_scheme
 
-dotenv.load_dotenv()
+dotenv.load_dotenv("../.env")
 
 # Configure logging
 logging.basicConfig(
@@ -31,7 +31,6 @@ logger.info(f"Front-end Client ID is: {environ.get('FE_CLIENT_ID')}")
 logger.info(f"Tenant Id is: {environ.get('TENANT_ID')}")
 logger.info(f"Scopes are: {environ.get('API_SCOPES')}")
 logger.info(f"Front-end scope is: {environ.get('SCOPE')}")
-# 'scopes': 'api://fastapi-backend/User.CallApi',
 
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],

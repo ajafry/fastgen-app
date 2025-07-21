@@ -9,6 +9,7 @@
 .env.production.local
 .vscode/
 settings.json
+build-images.ps1
 
 # NODE gitignore items
 # dependencies

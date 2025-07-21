@@ -24,7 +24,7 @@ export const getRedirectUri = () => {
  export const msalConfig = {
      auth: {
          clientId: process.env.REACT_APP_CLIENT_ID, // This is the ONLY mandatory field that you need to supply.
-         authority: `https://login.microsoftonline.com/${process.env.REACT_APP_TENANT_ID}/oauth2/v2.0/token`,
+         authority: `https://login.microsoftonline.com/${process.env.REACT_APP_TENANT_ID}`,
          redirectUri: getRedirectUri(), // Points to window.location.origin. You must register this URI on Microsoft Entra admin center/App Registration.
          postLogoutRedirectUri: '/', // Indicates the page to navigate after logout.
          navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.

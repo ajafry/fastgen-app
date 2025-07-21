@@ -130,8 +130,10 @@ export const AppProvider = ({ children }) => {
     // API functions
     const apiActions = useMemo(() => ({
         loadPeople: () => callApi(VIEW_TYPES.PEOPLE, async () => {
+            console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL); // Temporary debug line
+            console.log(`Call load people API at URL: ${process.env.REACT_APP_API_BASE_URL}/api/people/`); // Temporary debug line
             const token = await getAccessToken();
-            const response = await fetch('http://localhost:8000/api/people/', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/people/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -143,7 +145,7 @@ export const AppProvider = ({ children }) => {
 
         loadHelloWorld: () => callApi(VIEW_TYPES.HELLO_WORLD, async () => {
             const token = await getAccessToken();
-            const response = await fetch('http://localhost:8000/api/hello/', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/hello/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
