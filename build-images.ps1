@@ -46,16 +46,3 @@ az containerapp create --name frontend --resource-group ${ResourceGroupName} --i
 
 az containerapp create --name backend --resource-group ${ResourceGroupName} --image ${AzureRegistory}/${BackEndImageName}:latest --env-vars 'backend/.env' --ingress external --target-port 80 --environment ${ContainerAppEnvName}
 
-# Run the backend image
-podman run `
-  -e TENANT_ID=ef1d4b1e-bd3c-4e1e-a8de-525e802c43d1 `
-  -e APP_CLIENT_ID=95f37204-669c-4dc9-a9a7-292918a0a5f8 `
-  -e FE_CLIENT_ID=6b4328eb-ec24-4546-ae28-ba3f29114db8 `
-  -e API_SCOPES='{"api://fastapi-backend/User.CallApi": "User.CallApi"}' `
-  -e SCOPE='api://fastapi-backend/User.CallApi' `
-  --dns=8.8.8.8 `
-  --dns=8.8.4.4 `
-  --dns=1.1.1.1 `
-  -p 8000:80 `
-  --rm `
-  ${BackEndImageName}:latest
