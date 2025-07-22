@@ -6,7 +6,7 @@ import '../styles/Navbar.css';
 
 export const NavigationBar = () => {
     const { instance, accounts } = useMsal();
-    const { loadPeople, loadHelloWorld, showClaims, loading } = useApp();
+    const { loadPeople, loadHelloWorld, showClaims, showChat, loading } = useApp();
     const account = accounts[0];
 
     const handleLoginRedirect = () => {
@@ -21,7 +21,7 @@ export const NavigationBar = () => {
         <Navbar bg="primary" variant="dark" expand="lg" className="navbar-custom">
             <Container>
                 <Navbar.Brand href="/" className="brand-custom">
-                    React SPA with MSAL Authentication
+                    Chatbot
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
@@ -48,6 +48,12 @@ export const NavigationBar = () => {
                                     disabled={loading[VIEW_TYPES.PEOPLE]}
                                 >
                                     👥 {loading[VIEW_TYPES.PEOPLE] ? 'Loading...' : 'Load People'}
+                                </NavDropdown.Item>
+                                <NavDropdown.Item 
+                                    onClick={showChat}
+                                    disabled={loading[VIEW_TYPES.CHAT]}
+                                >
+                                    💬 {loading[VIEW_TYPES.CHAT] ? 'Loading...' : 'Chat'}
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Header>Display Options</NavDropdown.Header>

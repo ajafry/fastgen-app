@@ -7,7 +7,7 @@ export const PageLayout = ({ children }) => {
             <NavigationBar />
             <br />
             <h5>
-                <center>Welcome to the Microsoft Authentication Library For React Tutorial</center>
+                <center>I am a helpful Chat Assistant</center>
             </h5>
             <br />
             {children}

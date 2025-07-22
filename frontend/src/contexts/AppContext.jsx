@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useMemo, useState } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { apiRequest } from '../authConfig';
 
@@ -7,10 +7,7 @@ export const VIEW_TYPES = {
     CLAIMS: 'claims',
     PEOPLE: 'people',
     HELLO_WORLD: 'hello_world',
-    // Easy to add more views here
-    // USERS: 'users',
-    // ORDERS: 'orders',
-    // DASHBOARD: 'dashboard',
+    CHAT: 'chat',
 };
 
 // Define action types
@@ -24,7 +21,7 @@ const ACTION_TYPES = {
 
 // Initial state
 const initialState = {
-    currentView: VIEW_TYPES.CLAIMS,
+    currentView: VIEW_TYPES.CHAT,
     loading: {},
     data: {},
     errors: {},
@@ -99,6 +96,10 @@ export const useApp = () => {
 export const AppProvider = ({ children }) => {
     const { instance } = useMsal();
     const [state, dispatch] = useReducer(appReducer, initialState);
+    
+    // Chat-specific state
+    const [chatHistory, setChatHistory] = useState([]);
+    const [conversationId, setConversationId] = useState('-1');
 
     // Generic API call function
     const callApi = async (view, apiCall) => {
@@ -127,11 +128,61 @@ export const AppProvider = ({ children }) => {
         return response.accessToken;
     };
 
+    // Chat functions
+    const sendChatMessage = async (message) => {
+        dispatch({ type: ACTION_TYPES.SET_LOADING, payload: { view: VIEW_TYPES.CHAT, isLoading: true } });
+        dispatch({ type: ACTION_TYPES.CLEAR_ERROR, payload: { view: VIEW_TYPES.CHAT } });
+
+        try {
+            const token = await getAccessToken();
+            console.log(`Call chat API at URL: ${process.env.REACT_APP_API_BASE_URL}/api/chat/message`);
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/chat/message`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    conversation_id: conversationId === '-1' ? null : conversationId
+                }),
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const result = await response.json();
+            console.log('==> Chat response:', result);
+            
+            // Update conversation ID
+            setConversationId(result.conversation_id);
+            
+            // Add to chat history
+            const newExchange = {
+                user_message: message,
+                assistant_response: result.response,
+                timestamp: result.timestamp
+            };
+            
+            setChatHistory(prev => [...prev, newExchange]);
+            
+        } catch (error) {
+            dispatch({ type: ACTION_TYPES.SET_ERROR, payload: { view: VIEW_TYPES.CHAT, error: error.message } });
+        } finally {
+            dispatch({ type: ACTION_TYPES.SET_LOADING, payload: { view: VIEW_TYPES.CHAT, isLoading: false } });
+        }
+    };
+
+    const resetChatConversation = () => {
+        setConversationId('-1');
+        setChatHistory([]);
+        dispatch({ type: ACTION_TYPES.CLEAR_ERROR, payload: { view: VIEW_TYPES.CHAT } });
+    };
+
     // API functions
     const apiActions = useMemo(() => ({
         loadPeople: () => callApi(VIEW_TYPES.PEOPLE, async () => {
-            console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL); // Temporary debug line
-            console.log(`Call load people API at URL: ${process.env.REACT_APP_API_BASE_URL}/api/people/`); // Temporary debug line
+            console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL);
+            console.log(`Call load people API at URL: ${process.env.REACT_APP_API_BASE_URL}/api/people/`);
             const token = await getAccessToken();
             const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/people/`, {
                 headers: {
@@ -155,23 +206,25 @@ export const AppProvider = ({ children }) => {
             return await response.json();
         }),
 
-        // Easy to add more API calls here
-        // loadUsers: () => callApi(VIEW_TYPES.USERS, async () => { ... }),
-        // loadOrders: () => callApi(VIEW_TYPES.ORDERS, async () => { ... }),
-    }), [instance]);
+        // Chat functions
+        sendChatMessage,
+        resetChatConversation,
+    }), [instance, conversationId]);
 
     // View actions
     const viewActions = useMemo(() => ({
         showClaims: () => dispatch({ type: ACTION_TYPES.SET_VIEW, payload: VIEW_TYPES.CLAIMS }),
         showPeople: () => dispatch({ type: ACTION_TYPES.SET_VIEW, payload: VIEW_TYPES.PEOPLE }),
         showHelloWorld: () => dispatch({ type: ACTION_TYPES.SET_VIEW, payload: VIEW_TYPES.HELLO_WORLD }),
-        // Easy to add more view actions here
+        showChat: () => dispatch({ type: ACTION_TYPES.SET_VIEW, payload: VIEW_TYPES.CHAT }),
     }), []);
 
     const value = {
         ...state,
         ...apiActions,
         ...viewActions,
+        chatHistory,
+        conversationId,
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

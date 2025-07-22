@@ -14,9 +14,7 @@ const MainContent = () => {
                 <ViewRenderer />
             </AuthenticatedTemplate>
             <UnauthenticatedTemplate>
-                <Button className="signInButton" variant="primary">
-                    Sign up
-                </Button>
+                Sign-In to unlock additional features
             </UnauthenticatedTemplate>
         </div>
     );

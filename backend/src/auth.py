@@ -1,7 +1,10 @@
+import dotenv
 from fastapi_azure_auth import SingleTenantAzureAuthorizationCodeBearer
 from os import environ
 import json
 import logging
+
+dotenv.load_dotenv("../.env")
 
 logger = logging.getLogger(__name__)
 

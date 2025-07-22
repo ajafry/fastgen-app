@@ -4,6 +4,7 @@ import logging
 from fastapi import FastAPI, Security
 from fastapi.middleware.cors import CORSMiddleware
 from people.people import peopleRouter
+from people.chat import chatRouter
 from os import environ
 from auth import azure_scheme
 
@@ -39,7 +40,9 @@ app.add_middleware(CORSMiddleware,
     allow_headers=["*"],
 )
 
+# Include routers with authentication
 app.include_router(peopleRouter, dependencies=[Security(azure_scheme)])
+app.include_router(chatRouter, dependencies=[Security(azure_scheme)])
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

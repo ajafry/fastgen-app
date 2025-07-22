@@ -4,6 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { useApp, VIEW_TYPES } from '../contexts/AppContext';
 import { IdTokenData } from './DataDisplay';
 import { PeopleDisplay } from './PeopleDisplay';
+import { ChatDisplay } from './ChatDisplay';
 
 // Component to render Hello World data
 const HelloWorldDisplay = ({ data, loading, error }) => {
@@ -21,7 +22,15 @@ const HelloWorldDisplay = ({ data, loading, error }) => {
 
 export const ViewRenderer = () => {
     const { instance } = useMsal();
-    const { currentView, data, loading, errors } = useApp();
+    const { 
+        currentView, 
+        data, 
+        loading, 
+        errors, 
+        chatHistory, 
+        sendChatMessage, 
+        resetChatConversation 
+    } = useApp();
     const activeAccount = instance.getActiveAccount();
 
     if (!activeAccount) return null;
@@ -46,6 +55,17 @@ export const ViewRenderer = () => {
                         data={data[VIEW_TYPES.HELLO_WORLD]} 
                         loading={loading[VIEW_TYPES.HELLO_WORLD]} 
                         error={errors[VIEW_TYPES.HELLO_WORLD]} 
+                    />
+                );
+            
+            case VIEW_TYPES.CHAT:
+                return (
+                    <ChatDisplay 
+                        chatHistory={chatHistory}
+                        loading={loading[VIEW_TYPES.CHAT]} 
+                        error={errors[VIEW_TYPES.CHAT]}
+                        onSendMessage={sendChatMessage}
+                        onResetConversation={resetChatConversation}
                     />
                 );
             
